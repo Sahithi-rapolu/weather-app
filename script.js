@@ -277,11 +277,11 @@ function renderDaily(data) {
 
 // 🌤 ICONS
 function getIcon(code) {
-    if (code === 0) return "https://cdn-icons-png.flaticon.com/512/869/869869.png";
-    if (code <= 3) return "https://cdn-icons-png.flaticon.com/512/414/414825.png";
-    if (code >= 51) return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png";
-    if (code >= 71) return "https://cdn-icons-png.flaticon.com/512/642/642102.png";
-    return "";
+    if (code === 0) return "https://cdn-icons-png.flaticon.com/512/869/869869.png"; // sun
+    if (code <= 3) return "https://cdn-icons-png.flaticon.com/512/414/414825.png"; // cloud
+    if (code >= 51 && code <= 67) return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
+    if (code >= 71) return "https://cdn-icons-png.flaticon.com/512/642/642102.png"; // snow
+    return "https://cdn-icons-png.flaticon.com/512/869/869869.png";
 }
 
 // 🌦 CONDITION
