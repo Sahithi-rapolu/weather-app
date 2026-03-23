@@ -204,14 +204,35 @@ body {
         transform: translateY(0);
     }
 }
-#icon {
-    width: 70px;
-    height: 70px;
-    animation: float 3s ease-in-out infinite;
-}
+
 
 @keyframes float {
     0% { transform: translateY(0); }
     50% { transform: translateY(-6px); }
     100% { transform: translateY(0); }
+}
+/* 🌤 MAIN BIG ICON */
+#icon {
+    width: 70px !important;
+    height: 70px !important;
+    object-fit: contain;
+}
+
+/* 📅 DAILY FORECAST ICONS */
+.day img {
+    width: 35px !important;
+    height: 35px !important;
+    object-fit: contain;
+}
+
+/* 🕒 HOURLY / OTHER ICONS (if any) */
+.hour-card img {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+/* 🛑 SAFETY: all images control */
+img {
+    max-width: 100%;
+    height: auto;
 }
