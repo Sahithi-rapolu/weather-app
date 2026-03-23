@@ -25,20 +25,16 @@ async function getLocation() {
         );
         const g = await geo.json();
 
-        const city =
+        const name =
     g.address.city ||
     g.address.town ||
     g.address.village ||
-    g.address.state ||
-    "Your Location";
+    "";
 
 const state = g.address.state || "";
+const country = g.address.country || "";
 
-const fullName = city + (state ? ", " + state : "");
-
-fetchWeather(lat, lon, fullName);
-
-        fetchWeather(lat, lon, name);
+fetchWeather(lat, lon, `${name}, ${state}, ${country}`);
     });
 }
 
@@ -118,22 +114,29 @@ function drawChart(data) {
         data: {
             labels,
             datasets: [{
-                data: values,
-                borderColor: color,
-                backgroundColor: gradient,
-                fill: true,
-                tension: 0.45,
-
-                pointRadius: (ctx) => ctx.dataIndex === currentIndex ? 6 : 0,
-                pointHoverRadius: 6,
-                pointBackgroundColor: color
-            }]
+    data: values,
+    borderColor: "#fbbc04",
+    backgroundColor: gradient,
+    fill: true,
+    tension: 0.4,
+    pointRadius: 4,
+    pointBackgroundColor: "#fbbc04",
+    pointHoverRadius: 6
+}]
         },
         options: {
             interaction: {
                 mode: "index",
                 intersect: false
             },
+            plugins: {
+    legend: { display: false },
+    tooltip: {
+        callbacks: {
+            label: (ctx) => ctx.raw + "°C"
+        }
+    }
+},
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -245,6 +248,7 @@ function drawChart(data) {
 
                     ctx.restore();
                 }
+                
             }
         ]
     });
@@ -298,70 +302,24 @@ setInterval(() => {
     if (city) getWeather();
 }, 120000); // every 2 mins
 
-function setAnimatedBackground(condition) {
-    const bg = document.getElementById("bg-animation");
-    bg.innerHTML = "";
+function setDynamicBackground(condition) {
+    const body = document.body;
 
-    // ☀️ CLEAR
     if (condition.includes("clear")) {
-        const sun = document.createElement("div");
-        sun.className = "sun";
-        bg.appendChild(sun);
-
-        // clouds
-        for (let i = 0; i < 3; i++) {
-            const cloud = document.createElement("div");
-            cloud.className = "cloud";
-            cloud.style.top = Math.random() * 50 + "vh";
-            cloud.style.animationDuration = (20 + Math.random() * 10) + "s";
-            bg.appendChild(cloud);
-        }
-    }
-
-    // ☁️ CLOUDY
+        body.style.background = "linear-gradient(to top, #fceabb, #f8b500)";
+        body.style.color = "#222";
+    } 
     else if (condition.includes("cloud")) {
-        for (let i = 0; i < 6; i++) {
-            const cloud = document.createElement("div");
-            cloud.className = "cloud";
-            cloud.style.top = Math.random() * 80 + "vh";
-            cloud.style.animationDuration = (15 + Math.random() * 10) + "s";
-            bg.appendChild(cloud);
-        }
-    }
-
-    // 🌧️ RAIN
+        body.style.background = "linear-gradient(to top, #d7d2cc, #304352)";
+        body.style.color = "white";
+    } 
     else if (condition.includes("rain")) {
-        for (let i = 0; i < 80; i++) {
-            const drop = document.createElement("div");
-            drop.className = "drop";
-            drop.style.left = Math.random() * 100 + "vw";
-            drop.style.animationDuration = (0.5 + Math.random()) + "s";
-            bg.appendChild(drop);
-        }
-    }
-
-    // ❄️ SNOW
-    else if (condition.includes("snow")) {
-        for (let i = 0; i < 50; i++) {
-            const flake = document.createElement("div");
-            flake.className = "flake";
-            flake.innerText = "❄";
-            flake.style.left = Math.random() * 100 + "vw";
-            flake.style.animationDuration = (3 + Math.random() * 2) + "s";
-            bg.appendChild(flake);
-        }
-    }
-
-    // 🌙 NIGHT (optional)
-    const hour = new Date().getHours();
-    if (hour >= 19 || hour <= 5) {
-        for (let i = 0; i < 50; i++) {
-            const star = document.createElement("div");
-            star.className = "star";
-            star.style.left = Math.random() * 100 + "vw";
-            star.style.top = Math.random() * 100 + "vh";
-            bg.appendChild(star);
-        }
+        body.style.background = "linear-gradient(to top, #4b79a1, #283e51)";
+        body.style.color = "white";
+    } 
+    else {
+        body.style.background = "#111";
+        body.style.color = "white";
     }
 }
 function startRain() {
