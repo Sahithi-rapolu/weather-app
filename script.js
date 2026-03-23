@@ -265,11 +265,11 @@ function renderDaily(data) {
         const date = new Date(d).toLocaleDateString("en-US",{weekday:"short"});
 
         div.innerHTML = `
-            <p>${date}</p>
-            <img src="${getIcon(data.daily.weathercode[i])}">
-            <p>${Math.round(data.daily.temperature_2m_max[i])}°</p>
-            <small>${Math.round(data.daily.temperature_2m_min[i])}°</small>
-        `;
+    <p>${date}</p>
+    <img src="${getIcon(data.daily.weathercode[i])}" />
+    <p>${Math.round(data.daily.temperature_2m_max[i])}°</p>
+    <small>${Math.round(data.daily.temperature_2m_min[i])}°</small>
+`;
 
         container.appendChild(div);
     });
