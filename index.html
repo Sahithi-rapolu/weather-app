@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<div id="bg-animation"></div>
+<div class="app">
+
+    <!-- 🔍 SEARCH -->
+    <div class="search">
+        <input id="city" placeholder="Search location..." onkeypress="handleKey(event)">
+        <button onclick="getWeather()">🔍</button>
+        <button onclick="getLocation()">📍</button>
+    </div>
+
+    <!-- 🌤 CURRENT -->
+    <div class="current">
+        <h2 id="place">--</h2>
+        <p id="time">--</p>
+
+        <div class="main">
+            <img id="icon" />
+            <h1 id="temp">--°</h1>
+        </div>
+
+        <p id="desc">--</p>
+    </div>
+
+    <!-- 📊 HOURLY GRAPH -->
+    <div class="chart-box">
+        <canvas id="chart"></canvas>
+    </div>
+
+    <!-- 📅 DAILY -->
+    <div id="daily" class="daily"></div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
