@@ -277,10 +277,24 @@ function renderDaily(data) {
 
 // 🌤 ICONS
 function getIcon(code) {
-    if (code === 0) return "https://cdn-icons-png.flaticon.com/512/869/869869.png"; // sun
-    if (code <= 3) return "https://cdn-icons-png.flaticon.com/512/414/414825.png"; // cloud
-    if (code >= 51 && code <= 67) return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
-    if (code >= 71) return "https://cdn-icons-png.flaticon.com/512/642/642102.png"; // snow
+    if (code === 0) 
+        return "https://cdn-icons-png.flaticon.com/512/869/869869.png"; // sun
+
+    if (code >= 1 && code <= 3) 
+        return "https://cdn-icons-png.flaticon.com/512/414/414825.png"; // cloud
+
+    if (code >= 45 && code <= 48) 
+        return "https://cdn-icons-png.flaticon.com/512/4005/4005901.png"; // fog
+
+    if (code >= 51 && code <= 67) 
+        return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
+
+    if (code >= 71 && code <= 77) 
+        return "https://cdn-icons-png.flaticon.com/512/642/642102.png"; // snow
+
+    if (code >= 80) 
+        return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
+
     return "https://cdn-icons-png.flaticon.com/512/869/869869.png";
 }
 
