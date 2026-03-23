@@ -49,8 +49,9 @@ body {
 }
 
 .main img {
-    width: 70px;
-    animation: float 3s infinite ease-in-out;
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
 }
 
 /* FLOAT ICON */
@@ -87,7 +88,11 @@ body {
 }
 
 .day img {
-    width: 35px;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
+    margin: 5px auto;
 }
 /* 🌤 BACKGROUND CONTAINER */
 #bg-animation {
@@ -235,4 +240,18 @@ body {
 img {
     max-width: 100%;
     height: auto;
+}
+.current h1 {
+    font-size: 56px;
+    font-weight: 500;
+}
+
+.current p {
+    margin: 2px 0;
+    color: #5f6368;
+}
+
+.day {
+    padding: 8px;
+    border-radius: 12px;
 }
