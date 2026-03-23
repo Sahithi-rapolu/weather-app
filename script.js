@@ -11,7 +11,8 @@ async function getWeather() {
 
     const p = g.results.find(loc => loc.country === "India") || g.results[0];
     const fullName = p.name + ", " + (p.admin1 || "");
-fetchWeather(p.latitude, p.longitude, fullName);
+
+    fetchWeather(p.latitude, p.longitude, fullName);
 }
 
 // 📍 LOCATION
@@ -26,15 +27,15 @@ async function getLocation() {
         const g = await geo.json();
 
         const name =
-    g.address.city ||
-    g.address.town ||
-    g.address.village ||
-    "";
+            g.address.city ||
+            g.address.town ||
+            g.address.village ||
+            "";
 
-const state = g.address.state || "";
-const country = g.address.country || "";
+        const state = g.address.state || "";
+        const country = g.address.country || "";
 
-fetchWeather(lat, lon, `${name}, ${state}, ${country}`);
+        fetchWeather(lat, lon, `${name}, ${state}, ${country}`);
     });
 }
 
@@ -64,16 +65,15 @@ function updateUI(data, name) {
 
     drawChart(data);
     renderDaily(data);
-    setAnimatedBackground(condition.toLowerCase());
+    setDynamicBackground(condition.toLowerCase());
 }
 
-// 📊 CHART
+// 📊 CHART (FINAL PREMIUM)
 function drawChart(data) {
     const now = new Date();
 
     const labels = [];
     const values = [];
-    let currentIndex = 0;
 
     for (let i = 0; i < data.hourly.time.length; i++) {
         const t = new Date(data.hourly.time[i]);
@@ -85,10 +85,7 @@ function drawChart(data) {
                     hour12: true
                 })
             );
-
             values.push(Math.round(data.hourly.temperature_2m[i]));
-
-            if (labels.length === 1) currentIndex = 0;
         }
     }
 
@@ -99,13 +96,9 @@ function drawChart(data) {
 
     const ctx = document.getElementById("chart").getContext("2d");
 
-    // 🎨 Dynamic color based on temp
-    const avgTemp = values.reduce((a,b)=>a+b,0)/values.length;
-    const color = avgTemp > 30 ? "#ff5722" : "#2196f3";
-
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, color + "99");
-    gradient.addColorStop(1, color + "00");
+    gradient.addColorStop(0, "rgba(251,188,4,0.5)");
+    gradient.addColorStop(1, "rgba(251,188,4,0)");
 
     if (chart) chart.destroy();
 
@@ -114,15 +107,16 @@ function drawChart(data) {
         data: {
             labels,
             datasets: [{
-    data: values,
-    borderColor: "#fbbc04",
-    backgroundColor: gradient,
-    fill: true,
-    tension: 0.4,
-    pointRadius: 4,
-    pointBackgroundColor: "#fbbc04",
-    pointHoverRadius: 6
-}]
+                data: values,
+                borderColor: "#fbbc04",
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: "#fbbc04"
+            }]
         },
         options: {
             interaction: {
@@ -130,129 +124,26 @@ function drawChart(data) {
                 intersect: false
             },
             plugins: {
-    legend: { display: false },
-    tooltip: {
-        callbacks: {
-            label: (ctx) => ctx.raw + "°C"
-        }
-    }
-},
-            plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: "#111",
-                    titleColor: "#fff",
-                    bodyColor: "#fff",
-                    displayColors: false,
                     callbacks: {
-                        title: (ctx) => ctx[0].label,
-                        label: (ctx) => {
-                            const feels = values[ctx.dataIndex] + 1; // slight variation
-                            return `Temp: ${ctx.raw}°C | Feels: ${feels}°C`;
-                        }
+                        label: ctx => ctx.raw + "°C"
                     }
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: {
-                        color: "#666",
-                        maxRotation: 0
-                    }
+                    ticks: { color: "#666" }
                 },
-                y: {
-                    display: false
-                }
+                y: { display: false }
             },
             responsive: true,
             maintainAspectRatio: false
-        },
-
-        plugins: [
-            // 🔥 glow
-            {
-                id: "glow",
-                afterDatasetsDraw(chart) {
-                    const { ctx } = chart;
-                    const meta = chart.getDatasetMeta(0);
-                    const point = meta.data[currentIndex];
-                    if (!point) return;
-
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(point.x, point.y, 12, 0, 2 * Math.PI);
-                    ctx.fillStyle = color + "33";
-                    ctx.fill();
-                    ctx.restore();
-                }
-            },
-
-            // 🔥 hover line
-            {
-                id: "hoverLine",
-                afterDraw(chart) {
-                    if (chart.tooltip?._active?.length) {
-                        const ctx = chart.ctx;
-                        const x = chart.tooltip._active[0].element.x;
-                        const topY = chart.scales.y.top;
-                        const bottomY = chart.scales.y.bottom;
-
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.moveTo(x, topY);
-                        ctx.lineTo(x, bottomY);
-                        ctx.strokeStyle = "rgba(0,0,0,0.2)";
-                        ctx.stroke();
-                        ctx.restore();
-                    }
-                }
-            },
-
-            // 🔥 animated pulse (LIVE effect)
-            {
-                id: "pulse",
-                afterDatasetsDraw(chart) {
-                    const { ctx } = chart;
-                    const meta = chart.getDatasetMeta(0);
-                    const point = meta.data[currentIndex];
-                    if (!point) return;
-
-                    const time = Date.now() / 500;
-                    const radius = 6 + Math.sin(time) * 2;
-
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
-                    ctx.fillStyle = color;
-                    ctx.fill();
-                    ctx.restore();
-                }
-            },
-
-            // 🔥 NOW label
-            {
-                id: "nowLabel",
-                afterDraw(chart) {
-                    const { ctx } = chart;
-                    const meta = chart.getDatasetMeta(0);
-                    const point = meta.data[currentIndex];
-                    if (!point) return;
-
-                    ctx.save();
-                    ctx.fillStyle = "#000";
-                    ctx.font = "bold 11px Segoe UI";
-                    ctx.textAlign = "center";
-
-                    ctx.fillText("Now", point.x, chart.scales.y.bottom + 15);
-
-                    ctx.restore();
-                }
-                
-            }
-        ]
+        }
     });
 }
+
 // 📅 DAILY
 function renderDaily(data) {
     const container = document.getElementById("daily");
@@ -264,37 +155,28 @@ function renderDaily(data) {
 
         const date = new Date(d).toLocaleDateString("en-US",{weekday:"short"});
 
+        const icon = getIcon(data.daily.weathercode[i]) ||
+        "https://cdn-icons-png.flaticon.com/512/869/869869.png";
+
         div.innerHTML = `
-    <p>${date}</p>
-    <img src="${getIcon(data.daily.weathercode[i])}" />
-    <p>${Math.round(data.daily.temperature_2m_max[i])}°</p>
-    <small>${Math.round(data.daily.temperature_2m_min[i])}°</small>
-`;
+            <p>${date}</p>
+            <img src="${icon}" />
+            <p>${Math.round(data.daily.temperature_2m_max[i])}°</p>
+            <small>${Math.round(data.daily.temperature_2m_min[i])}°</small>
+        `;
 
         container.appendChild(div);
     });
 }
 
-// 🌤 ICONS
+// 🌤 ICONS (FIXED)
 function getIcon(code) {
-    if (code === 0) 
-        return "https://cdn-icons-png.flaticon.com/512/869/869869.png"; // sun
-
-    if (code >= 1 && code <= 3) 
-        return "https://cdn-icons-png.flaticon.com/512/414/414825.png"; // cloud
-
-    if (code >= 45 && code <= 48) 
-        return "https://cdn-icons-png.flaticon.com/512/4005/4005901.png"; // fog
-
-    if (code >= 51 && code <= 67) 
-        return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
-
-    if (code >= 71 && code <= 77) 
-        return "https://cdn-icons-png.flaticon.com/512/642/642102.png"; // snow
-
-    if (code >= 80) 
-        return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png"; // rain
-
+    if (code === 0) return "https://cdn-icons-png.flaticon.com/512/869/869869.png";
+    if (code <= 3) return "https://cdn-icons-png.flaticon.com/512/414/414825.png";
+    if (code >= 45 && code <= 48) return "https://cdn-icons-png.flaticon.com/512/4005/4005901.png";
+    if (code >= 51 && code <= 67) return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png";
+    if (code >= 71 && code <= 77) return "https://cdn-icons-png.flaticon.com/512/642/642102.png";
+    if (code >= 80) return "https://cdn-icons-png.flaticon.com/512/1163/1163624.png";
     return "https://cdn-icons-png.flaticon.com/512/869/869869.png";
 }
 
@@ -307,15 +189,12 @@ function getCondition(code) {
     return "Clear";
 }
 
-// ⌨
+// ⌨ ENTER
 function handleKey(e){
     if(e.key==="Enter") getWeather();
 }
-setInterval(() => {
-    const city = document.getElementById("city").value;
-    if (city) getWeather();
-}, 120000); // every 2 mins
 
+// 🌈 BACKGROUND
 function setDynamicBackground(condition) {
     const body = document.body;
 
@@ -334,21 +213,5 @@ function setDynamicBackground(condition) {
     else {
         body.style.background = "#111";
         body.style.color = "white";
-    }
-}
-function startRain() {
-    const bg = document.getElementById("bg-animation");
-
-    for (let i = 0; i < 80; i++) {
-        const drop = document.createElement("div");
-        drop.className = "drop";
-
-        drop.style.left = Math.random() * 100 + "vw";
-        drop.style.animationDuration = (0.5 + Math.random()) + "s";
-
-        // 🔥 dynamic brightness
-        drop.style.opacity = Math.random() * 0.6 + 0.3;
-
-        bg.appendChild(drop);
     }
 }
